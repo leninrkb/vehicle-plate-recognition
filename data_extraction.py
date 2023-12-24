@@ -13,6 +13,7 @@ def loadDataset(path, data:list, labels:list):
             imgray = cv.imread(f"{tpath}/{filename}", cv.IMREAD_GRAYSCALE)
             data.append(imgray)
             labels.append(dirname)
+        print(f"loading current dir: {dirname}")
     print("loading data set - done")
     
             
@@ -53,6 +54,7 @@ def writeDataset(path, data:list, labels:list):
         tpath = f"{path}/{current}"
         if not os.path.isdir(tpath):
             os.mkdir(tpath)
+            print(f"writting dir: {current}")
         tpath = f"{tpath}/{number}.png"
         cv.imwrite(tpath, data[i])
         number += 1
