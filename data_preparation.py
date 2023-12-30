@@ -18,37 +18,10 @@ def smooth(img):
     res = cv.filter2D(img, -1, kernel)
     return res
 
-def findRectangle(img, bin, min_area=1500, max_area=600):
-    contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
-    plate = None
-    for contour in contours:
-        area = cv.contourArea(contour)
-        x, y, w, h = cv.boundingRect(contour)
-        epsilon = 0.09 * cv.arcLength(contour, True)
-        apx = cv.approxPolyDP(contour, epsilon, True)
-        if len(apx) == 4 and area > min_area:
-            plate = bin[y:y+h, x:x+w]
-    return plate
-
 def edges(img):
     edges = cv.Canny(img,100,200)
     # edges = cv.dilate(edges, None, iterations=1)
     return edges
-
-def chars(img):
-    contours, _ = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    characters = []
-    for contour in contours:
-        area = cv.contourArea(contour)
-        if area > 10:
-            x, y, w, h = cv.boundingRect(contour)
-            aspect_ratio = w / h
-            print(aspect_ratio)
-            if 0.4 <= aspect_ratio <= 0.58:  # 9:16
-                ch = img[y:y+h, x:x+w]
-                characters.append(ch)
-    return characters
-
 
 def accent(img):
     kernel = np.array([[-1,-1,-1], 
@@ -56,6 +29,48 @@ def accent(img):
                     [-1,-1,-1]])
     img = cv.filter2D(img, -1, kernel)
     return img
+
+def findRectangle(img, bin, roi):
+    contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    plate = None
+    for contour in contours:
+        area = cv.contourArea(contour)
+        x, y, w, h = cv.boundingRect(contour)
+        epsilon = 0.09 * cv.arcLength(contour, True)
+        apx = cv.approxPolyDP(contour, epsilon, True)
+        if len(apx) == 4 and area > 1000:
+            plate = bin[y:y+h, x:x+w]
+            cv.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+    return plate
+
+def sortChars(chars):
+    sorted_chars = sorted(chars, key= lambda x: x[1])
+    return sorted_chars
+
+def chars(img):
+    contours, _ = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    characters = []
+    for contour in contours:
+        area = cv.contourArea(contour)
+        if area > 7:
+            x, y, w, h = cv.boundingRect(contour)
+            aspect_ratio = w / h
+            # print(aspect_ratio)
+            if 0.4 <= aspect_ratio <= 0.58 or 0.8 <= aspect_ratio <= 1.2:  # 9:16
+                # print((x,y), aspect_ratio)
+                ch = img[y:y+h, x:x+w]
+                characters.append((ch, x))
+    characters = sortChars(characters)
+    # for c in characters:
+    #     print(c[1])
+    characters = [c[0] for c in characters]
+    return characters
+
+
+
+
+
+
     
     
     

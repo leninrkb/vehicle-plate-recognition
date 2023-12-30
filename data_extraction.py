@@ -15,14 +15,6 @@ def loadDataset(path, data:list, labels:list):
             labels.append(dirname)
         print(f"loading current dir: {dirname}")
     print("loading data set - done")
-    
-            
-def resizeDataset(data:list, newsize:int):
-    ''' Hago resize a todo el dataset '''
-    print("resizing dataset")
-    for i in range(len(data)):
-        data[i] = cv.resize(data[i], (newsize, newsize))
-    print("resizing dataset - done")
         
 def createEmptyDir(path):
     ''' creo un directorio, si existe lo elimino y lo vuelvo a crear'''

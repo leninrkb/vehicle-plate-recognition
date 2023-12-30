@@ -3,6 +3,8 @@ import data_preparation as dp
 import utils as ut
 import numpy as np
 import cv2 as cv
+import post_processing as pp
+import time
 
 data = []
 labels = []
@@ -29,22 +31,38 @@ while True:
     # 
     s = 10
     roi = frame[top_left[1]+s:bottom_right[1]-s, top_left[0]+s:bottom_right[0]-s]
+    # cv.imshow("roi", roi)
+    
     roi = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
-    smooth = dp.smooth(roi)
-    acc = dp.accent(smooth)
+    # cv.imshow("roi gray", roi)
+    
+    # smooth = dp.smooth(roi)
+    # cv.imshow("roi smooth", smooth)
+    
+    acc = dp.accent(roi)
+    # cv.imshow("roi accent", acc)
+    
     bin = dp.binarize(acc)
+    # cv.imshow("roi bin", bin)
+    
     edges = dp.edges(bin)
-    rectangle = dp.findRectangle(edges, bin)
+    # cv.imshow("roi edges", edges)
+    
+    rectangle = dp.findRectangle(edges, bin, roi)
     if not rectangle is None:
         cv.imshow("plate", rectangle)
-        
-    # if cv.waitKey(1) == ord("c"):
-        chars = dp.chars(rectangle, min_area=100, max_area=300)
-        if len(chars) > 0 :
-            for i, c in enumerate(chars):
+        chars = dp.chars(rectangle)
+        for i, c in enumerate(chars):
                 cv.imshow(f"char: {i}", c)
-         
-         
+        if cv.waitKey(1) == ord("c"):
+            if len(chars) > 0:
+                print("caturing")
+                # for i, c in enumerate(chars):
+                #     cv.imshow(f"char: {i}", c)
+                start = time.time()
+                pp.main(chars)
+                print(f"time: {time.time() - start}")
+                
     if cv.waitKey(1) == ord('q'):
         break
 cap.release()
