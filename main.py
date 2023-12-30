@@ -33,36 +33,33 @@ while True:
     roi = frame[top_left[1]+s:bottom_right[1]-s, top_left[0]+s:bottom_right[0]-s]
     # cv.imshow("roi", roi)
     
-    roi = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
+    gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
     # cv.imshow("roi gray", roi)
     
-    # smooth = dp.smooth(roi)
+    # smooth = dp.smooth(gray)
     # cv.imshow("roi smooth", smooth)
     
-    acc = dp.accent(roi)
+    # acc = dp.accent(smooth)
     # cv.imshow("roi accent", acc)
     
-    bin = dp.binarize(acc)
+    bin = dp.binarize(gray)
     # cv.imshow("roi bin", bin)
     
     edges = dp.edges(bin)
     # cv.imshow("roi edges", edges)
     
-    rectangle = dp.findRectangle(edges, bin, roi)
-    if not rectangle is None:
-        cv.imshow("plate", rectangle)
-        chars = dp.chars(rectangle)
-        for i, c in enumerate(chars):
-                cv.imshow(f"char: {i}", c)
+    rect, roi = dp.findRectangle(edges, bin, roi)
+    if not rect is None:
+        cv.imshow("plate", rect)
+        cv.imshow("roi", roi)
+        chars = dp.chars(rect)
         if cv.waitKey(1) == ord("c"):
             if len(chars) > 0:
-                print("caturing")
-                # for i, c in enumerate(chars):
-                #     cv.imshow(f"char: {i}", c)
                 start = time.time()
                 pp.main(chars)
-                print(f"time: {time.time() - start}")
-                
+                print(f"time: {time.time() - start}", end="\n ------------ \n")
+        # del chars, rect
+    # del roi, gray, acc, bin, edges, smooth
     if cv.waitKey(1) == ord('q'):
         break
 cap.release()

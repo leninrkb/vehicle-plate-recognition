@@ -7,30 +7,30 @@ import cv2 as cv
 
 
 
-X = ut.loadData("data_binary")
-y = ut.loadData("labels")
+data = ut.loadData("data_binary")
+labels = ut.loadData("labels")
+test_size=0.001
+print(len(data))
+print(len(labels))
+print(len(data)*test_size)
 
-X = np.array(X)
-X = X.reshape(X.shape[0], -1)
+data = np.array(data)
+data = data.reshape(data.shape[0], -1)
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=test_size, random_state=42)
 
 knn = KNeighborsClassifier(n_neighbors=1, metric=ut.hamming_distance)
-knn.fit(X, y)
-# predictions = knn.predict(X_test[0:1])
-
-# y_test = y_test[0:1]
-# accuracy = accuracy_score(y_test, predictions)
-# precision = precision_score(y_test, predictions, average='macro')
-# recall = recall_score(y_test, predictions, average='macro')
-# f1 = f1_score(y_test, predictions, average='macro')
-
-# print(f'Accuracy: {accuracy}')
-# print(f'Precision: {precision}')
-# print(f'Recall: {recall}')
-# print(f'F1 Score: {f1}')
-
+knn.fit(data, labels)
 ut.saveData("knn",knn)
+
+predictions = knn.predict(x_test)
+accuracy = accuracy_score(y_test, predictions)
+precision = precision_score(y_test, predictions, average='macro')
+
+print(f'Accuracy: {accuracy}')
+print(f'Precision: {precision}')
+
+
 
 
 

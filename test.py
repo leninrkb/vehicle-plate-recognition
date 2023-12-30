@@ -17,4 +17,11 @@ import data_extraction as dx
 # cv.destroyAllWindows()
 
 
-print(np.sqrt(36576))
+print(3/2)
+print(4/3)
+print(5/4)
+print(14/9)
+print(16/9)
+print(4/1)
+print(16/10)
+print(9/16)
