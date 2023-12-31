@@ -38,14 +38,15 @@ def findRectangle(img, bin, roi):
     contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     plate = None
     for contour in contours:
-        epsilon = 0.09 * cv.arcLength(contour, True)
+        epsilon = 0.01 * cv.arcLength(contour, True)
         apx = cv.approxPolyDP(contour, epsilon, True)
         if len(apx) == 4:
             area = cv.contourArea(contour)
             if area > 1500:
                 x, y, w, h = cv.boundingRect(contour)
                 aspect_ratio = w / h
-                if 0.5 <= aspect_ratio <= 3.3 or ar.threshold(aspect_ratio):
+                if aspect_ratio >= 1 or ar.threshold(aspect_ratio):
+                    print(aspect_ratio, area)
                     plate = bin[y:y+h, x:x+w]
                     roi = cv.rectangle(roi,(x,y),(x+w,y+h),(0,255,0),2)
     return plate, roi
