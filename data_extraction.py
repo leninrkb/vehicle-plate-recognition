@@ -3,7 +3,7 @@ import shutil
 import cv2 as cv
 
 def loadDataset(path, data:list, labels:list):
-    ''' Cargo el dataset en memoria. Las img estan en gris '''
+    ''' Read and load gray scale img '''
     print("loading data set")
     directories = os.listdir(path)
     for dirname in directories:
@@ -17,7 +17,7 @@ def loadDataset(path, data:list, labels:list):
     print("loading data set - done")
         
 def createEmptyDir(path):
-    ''' creo un directorio, si existe lo elimino y lo vuelvo a crear'''
+    ''' create new dir, if exits delete current and create new empty one'''
     print("create empty dir")
     if os.path.isdir(path):
         shutil.rmtree(path)
@@ -28,13 +28,13 @@ def createEmptyDir(path):
     
     
 def writeDataset(path, data:list, labels:list):
-    ''' escribo el dataset en disco en la ruta que se indique '''
+    ''' write dataset on specified dir '''
     createEmptyDir(path)
     print("writting dataset")
     datalen = len(data)
     labelslen = len(labels)
     if not datalen == labelslen:
-        print(f"[ERROR]: inconsistencia. existe {datalen} datos y {labelslen} etiquetas")
+        print(f"[ERROR]: check data. data: {datalen} ; labels: {labelslen}")
         return
     number = 1
     last = labels[0]

@@ -11,8 +11,8 @@ labels = []
 
 video_width = 480
 video_height = 640
-width = 100
-height = 200
+width = 150
+height = 250
 top_left = (video_height//2 - height, video_width//2 - width)
 bottom_right = ( video_height//2 + height, video_width//2 + width)
 
@@ -34,15 +34,15 @@ while True:
     # cv.imshow("roi", roi)
     
     gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
-    # cv.imshow("roi gray", roi)
+    # cv.imshow("roi gray", gray)
     
-    # smooth = dp.smooth(gray)
+    smooth = dp.smooth(gray)
     # cv.imshow("roi smooth", smooth)
     
-    # acc = dp.accent(smooth)
+    acc = dp.accent(smooth)
     # cv.imshow("roi accent", acc)
     
-    bin = dp.binarize(gray)
+    bin = dp.binarize(acc)
     # cv.imshow("roi bin", bin)
     
     edges = dp.edges(bin)
