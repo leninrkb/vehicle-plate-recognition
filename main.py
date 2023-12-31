@@ -36,13 +36,13 @@ while True:
     gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
     # cv.imshow("roi gray", gray)
     
-    smooth = dp.smooth(gray)
+    # smooth = dp.smooth(gray)
     # cv.imshow("roi smooth", smooth)
     
-    acc = dp.accent(smooth)
+    # acc = dp.accent(gray)
     # cv.imshow("roi accent", acc)
     
-    bin = dp.binarize(acc)
+    bin = dp.binarize(gray)
     # cv.imshow("roi bin", bin)
     
     edges = dp.edges(bin)
