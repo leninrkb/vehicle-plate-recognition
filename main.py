@@ -53,11 +53,12 @@ while True:
         cv.imshow("plate", rect)
         cv.imshow("roi", roi)
         chars = dp.chars(rect)
-        if cv.waitKey(1) == ord("c"):
+        if cv.waitKey(1) == ord("c") or True:
             if len(chars) > 0:
                 start = time.time()
                 pp.main(chars)
                 print(f"time: {time.time() - start}", end="\n ------------ \n")
+        del chars
         # del chars, rect
     # del roi, gray, acc, bin, edges, smooth
     if cv.waitKey(1) == ord('q'):
