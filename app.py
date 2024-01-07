@@ -1,90 +1,140 @@
-import flet as ft
+import flet as fl
+import base64
 
+class Persona():
+    def __init__(self) -> None:
+        self.nombre = None
+        self.apellido = None
+        self.placa = None
+        self.modelo_auto = None
+        self.base64_placa = None
+        self.base64_persona = None
 
-class Info(ft.UserControl):
+class Info(fl.UserControl):
     def build(self):
-        column = ft.Column()
-        card = ft.Card()
+        column = fl.Column()
+        card = fl.Card()
+        container = fl.Container()
         
-        container = ft.Container()
+        row = fl.Row()
+        row.vertical_alignment = fl.CrossAxisAlignment.START
         
-        row = ft.Row()
-        row.wrap = 0
-        row.alignment = ft.MainAxisAlignment.SPACE_AROUND
-        
-        info = ft.Container()
-        # info.width = 100
-        # info.height = 100
-        # info.expand = True
+        info = fl.Container()
         info.padding = 10
-        info.bgcolor = ft.colors.AMBER
-        info.content = ft.Column(
-            scroll=ft.ScrollMode.ALWAYS,
+        # info.bgcolor = fl.colors.AMBER
+        info.content = fl.Column(
+            scroll=fl.ScrollMode.ALWAYS,
             controls=[
-                ft.TextField(
-                    label="Holaa",
-                    value= "holap",
+                fl.TextField(
+                    label="Nombres",
                 ),
-                ft.TextField(
-                    label="Holaa",
-                    value= "holap",
+                fl.TextField(
+                    label="Apellidos",
                 ),
-                ft.TextField(
-                    label="Holaa",
-                    value= "holap",
+                fl.TextField(
+                    label="Modelo del auto",
+                ),
+                fl.TextField(
+                    label="Color del auto",
                 ),
             ],
         )
         
-        imgs = ft.Container()
-        imgs.bgcolor = ft.colors.AMBER
-        imgs.content = ft.Column(
-            horizontal_alignment= ft.CrossAxisAlignment.CENTER,
+        imgs = fl.Container()
+        # imgs.bgcolor = fl.colors.AMBER
+        imgs.content = fl.Column(
+            horizontal_alignment= fl.CrossAxisAlignment.CENTER,
             controls=[
-                ft.Text(
-                    value="PROPIETARIO",
-                    style= ft.TextThemeStyle.DISPLAY_SMALL,
-                    weight= ft.FontWeight.BOLD,
+                fl.Text(
+                    value="FOTO",
+                    style= fl.TextThemeStyle.DISPLAY_SMALL,
+                    weight= fl.FontWeight.BOLD,
                 ),
-                ft.Image(
+                fl.Image(
                     src="./assets/lustre.png",
                     border_radius=10,
-                    fit= ft.ImageFit.COVER,
+                    fit= fl.ImageFit.COVER,
                     width=200,
                     height=200,
                 ),
-                ft.Text(
+                fl.Text(
                     value="PLACA",
-                    style= ft.TextThemeStyle.DISPLAY_SMALL,
-                    weight= ft.FontWeight.BOLD,
+                    style= fl.TextThemeStyle.DISPLAY_SMALL,
+                    weight= fl.FontWeight.BOLD,
                 ),
-                ft.Image(
+                fl.Image(
                     src="./assets/sample.png",
                     border_radius=10,
-                    fit= ft.ImageFit.COVER,
+                    fit= fl.ImageFit.COVER,
                     width=200,
                 ),
             ]
         )
         
         row.controls = [
-            info,
             imgs
+            ,info
         ]
         
         container.content = row 
         container.padding = 10
         
         card.content = container
-        column.controls = [card]
+        column.controls.append(card)
         return column
+    
+    
+    
+class Navigation(fl.UserControl):
+    def __init__(self, set_page) -> None:
+        super().__init__()
+        self.set_page = set_page
+    
+    def build(self):
+        rail = fl.NavigationRail(
+            selected_index=0
+            ,label_type=fl.NavigationRailLabelType.ALL
+            ,destinations=[
+                fl.NavigationRailDestination(
+                    icon=fl.icons.ADD_CIRCLE_OUTLINE_ROUNDED
+                    ,label="Agregar"
+                ),
+                fl.NavigationRailDestination(
+                    icon=fl.icons.LIST_ROUNDED
+                    ,label="Todos",
+                ),
+                fl.NavigationRailDestination(
+                    icon=fl.icons.REMOVE_RED_EYE_OUTLINED
+                    ,label_content=fl.Text("Reconocer")
+                ),
+            ]
+            ,on_change=lambda e: self.set_page(e.control.selected_index)
+        )
+        return rail
 
-def main(page:ft.Page):
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.theme = ft.Theme(color_scheme_seed=ft.colors.LIGHT_BLUE_ACCENT)
-    info = Info()
-    column = ft.Column()
-    column.controls.append(info)
-    page.add(column)
+def main(page:fl.Page):
+    page.title = "Placas"
+    page.theme_mode = fl.ThemeMode.LIGHT
+    page.theme = fl.Theme(color_scheme_seed=fl.colors.LIGHT_BLUE_ACCENT)
+    def set_page(index):
+        row.controls[2] = pages[index]
+        page.update()
+    
+    page1 = Info()
+    page2 = fl.Text("page two")
+    page3 = Info()
+    pages = [page1, page2, page3]
+    rail = Navigation(set_page)
+    content = pages[0]
+    
+    row = fl.Row(
+        expand=True
+        ,controls=[
+            rail
+            ,fl.VerticalDivider(width=1)
+            ,content
+        ]
+    )
+    page.add(row)
 
-ft.app(target=main, assets_dir="assets")
+fl.app(target=main, assets_dir="assets")
