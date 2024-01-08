@@ -1,4 +1,5 @@
 import flet as fl
+import main
 import base64
 
 class Person():
@@ -115,6 +116,23 @@ class Create(fl.UserControl):
     def create(self, e):
         entity = self.info.get_info()
         print(entity.name)
+        
+        
+class Recognition(fl.UserControl):
+    def __init__(self):
+        super().__init__()
+        
+    def build(self):
+        return fl.Column(
+            controls=[
+                fl.Card(
+                    content=fl.Container(
+                        
+                    )
+                )
+            ]
+        )    
+    
     
 class Navigation(fl.UserControl):
     def __init__(self, set_page) -> None:

@@ -5,17 +5,9 @@ import numpy as np
 import cv2 as cv
 import post_processing as pp
 import time
-import threading
 
-def process_chars(chars):
-    start = time.time()
-    pp.main(chars)
-    print(f"time: {time.time() - start}", end="\n ------------ \n")
     
 def main():
-    data = []
-    labels = []
-
     video_width = 480
     video_height = 640
     width = 150
@@ -64,20 +56,14 @@ def main():
                 if len(chars) > 0:
                     start = time.time()
                     pp.main(chars)
-                    thread = threading.Thread(target=process_chars, args=(chars,))
-                    thread.start()
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
             del chars
-            # del chars, rect
-        # del roi, gray, acc, bin, edges, smooth
         if cv.waitKey(1) == ord('q'):
             break
     cap.release()
     cv.destroyAllWindows()
-
-    # data = ut.loadData("binary_data")
-    # labels = ut.loadData("labels")
     
-main()
+if __name__ == "main":
+    main()
 
 
