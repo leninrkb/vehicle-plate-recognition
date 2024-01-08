@@ -3,12 +3,16 @@ import numpy as np
 from scipy.spatial import distance
 import aspect_ratio as ar
 
-d = 7
+d = 3
 kernel_smooth = np.ones((d,d), np.float32) / (d*d)
 kernel_acc = np.array([[-1,-1,-1], 
                     [-1, 9,-1],
                     [-1,-1,-1]])
 
+def set_kernel_size(n):
+    global kernel_smooth
+    kernel_smooth = np.ones((n,n), np.float32) / (n*n)
+    
 def binarizeData(data:list):
     for i in range(len(data)):
         data[i] = binarize(data[i])

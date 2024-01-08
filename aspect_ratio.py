@@ -7,7 +7,5 @@ def large(aspect_ratio):
 def threshold(aspect_ratio):
     return large(aspect_ratio)
 
-w = 40 * 2
-h = 15 * 2
-print(w/h)
+
     
