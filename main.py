@@ -6,8 +6,23 @@ import cv2 as cv
 import post_processing as pp
 import time
 
+capture = False
+end = False
+cap = cv.VideoCapture(0)
+
+def capture_frame():
+    global capture
+    capture = True
+    
+def end_recognition():
+    global end
+    end = True
     
 def main():
+    global capture
+    global end
+    capture = False
+    end = False
     video_width = 480
     video_height = 640
     width = 150
@@ -15,10 +30,11 @@ def main():
     top_left = (video_height//2 - height, video_width//2 - width)
     bottom_right = ( video_height//2 + height, video_width//2 + width)
 
-    cap = cv.VideoCapture(0)
+    cap.open(0)
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
+    
         
     while True:
         ret, frame = cap.read()
@@ -52,18 +68,16 @@ def main():
             cv.imshow("plate", rect)
             cv.imshow("roi", roi)
             chars = dp.chars(rect)
-            if cv.waitKey(1) == ord("c"):
+            if cv.waitKey(1) == ord("c") or capture:
                 if len(chars) > 0:
                     start = time.time()
                     pp.main(chars)
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
             del chars
-        if cv.waitKey(1) == ord('q'):
+        if cv.waitKey(1) == ord('q') or end:
             break
     cap.release()
     cv.destroyAllWindows()
-    
-if __name__ == "main":
-    main()
 
-
+# main()
+# main()

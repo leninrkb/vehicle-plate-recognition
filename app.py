@@ -1,5 +1,5 @@
 import flet as fl
-import main
+import main as recognition_logic
 import base64
 
 class Person():
@@ -84,8 +84,7 @@ class Info(fl.UserControl):
     def get_info(self) -> Person:
         self.entity.name = self.tf_name.value
         return self.entity
-        
-        
+              
 class Create(fl.UserControl):
     def __init__(self, page:fl.Page, entity:Person) -> None:
         super().__init__()
@@ -100,9 +99,13 @@ class Create(fl.UserControl):
                     controls = [
                         fl.TextButton(
                             text="Guardar"
+                            ,icon = fl.icons.SAVE
                             ,on_click=self.create
                         )
-                        ,fl.TextButton("cancelar")
+                        ,fl.TextButton(
+                            text = "cancelar"
+                            ,icon = fl.icons.CANCEL
+                        )
                     ]
                 )
             )
@@ -116,23 +119,56 @@ class Create(fl.UserControl):
     def create(self, e):
         entity = self.info.get_info()
         print(entity.name)
-        
-        
+          
 class Recognition(fl.UserControl):
     def __init__(self):
         super().__init__()
+        self.started = False
         
     def build(self):
         return fl.Column(
-            controls=[
+            controls = [
                 fl.Card(
-                    content=fl.Container(
-                        
+                    expand = True
+                    ,content = fl.Container(
+                        padding = 10
+                        ,content = fl.Column(
+                            controls = [
+                                fl.TextButton(
+                                    text = "Iniciar"
+                                    ,icon = fl.icons.REMOVE_RED_EYE_OUTLINED
+                                    ,on_click = self.start_recognition
+                                )
+                                ,fl.TextButton(
+                                    text = "Capturar"
+                                    ,icon = fl.icons.SCREENSHOT_MONITOR_ROUNDED
+                                    ,on_click = self.capture_frame
+                                )
+                                ,fl.TextButton(
+                                    text = "Terminar"
+                                    ,icon = fl.icons.CANCEL
+                                    ,on_click = self.end_recognition
+                                )
+                            ]
+                        )
                     )
                 )
             ]
-        )    
+        )  
     
+    def start_recognition(self, e):
+        self.started = True
+        recognition_logic.main()  
+        self.startes = False
+        
+    def capture_frame(self, e):
+        if self.started:
+            recognition_logic.capture_frame()
+        
+    def end_recognition(self, e):
+        if self.started:
+            recognition_logic.end_recognition()
+            self.started = False
     
 class Navigation(fl.UserControl):
     def __init__(self, set_page) -> None:
@@ -165,14 +201,16 @@ def main(page:fl.Page):
     page.title = "Placas"
     page.theme_mode = fl.ThemeMode.SYSTEM
     page.theme = fl.Theme(color_scheme_seed = fl.colors.CYAN)
+    # 
     def set_page(index):
         row.controls[2] = pages[index]
         page.update()
+    # 
     entity = Person()
     entity.name = "Sana Sunomiya"
     page1 = Create(page, entity)
     page2 = Info(entity)
-    page3 = Info(entity)
+    page3 = Recognition()
     pages = [page1, page2, page3]
     rail = Navigation(set_page)
     content = pages[0]
