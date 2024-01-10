@@ -121,9 +121,11 @@ class Create(fl.UserControl):
         print(entity.name)
           
 class Recognition(fl.UserControl):
-    def __init__(self):
+    def __init__(self, page:fl.Page):
         super().__init__()
         self.started = False
+        self.page = page
+        self.window_width = self.page.window_width
         
     def build(self):
         return fl.Column(
@@ -158,7 +160,11 @@ class Recognition(fl.UserControl):
     
     def start_recognition(self, e):
         self.started = True
+        self.page.window_width = self.window_width * 0.25
+        self.page.update()
         recognition_logic.main()  
+        self.page.window_width = self.window_width
+        self.page.update()
         self.startes = False
         
     def capture_frame(self, e):
@@ -210,7 +216,7 @@ def main(page:fl.Page):
     entity.name = "Sana Sunomiya"
     page1 = Create(page, entity)
     page2 = Info(entity)
-    page3 = Recognition()
+    page3 = Recognition(page)
     pages = [page1, page2, page3]
     rail = Navigation(set_page)
     content = pages[0]
