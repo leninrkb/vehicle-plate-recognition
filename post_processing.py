@@ -3,9 +3,9 @@ import data_preparation as dp
 import numpy as np
 import cv2 as cv
 
-model = ut.loadData("./models/augmented_knn")
+# model = ut.loadData("./models/augmented_knn")
 # model = ut.loadData("knn")
-# model = ut.loadData("svm_poly")
+model = ut.loadData("./models/svm_poly")
 # model = ut.loadData("svm_rbf")
 
 def main(data):
