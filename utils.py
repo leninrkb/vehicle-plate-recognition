@@ -1,6 +1,7 @@
 import cv2 as cv
 import  pickle 
 import numpy as np
+import matplotlib.pyplot as plt 
 
 def imshow(mat):
     cv.imshow("IMG", mat)
@@ -18,4 +19,10 @@ def loadData(path):
     with open(tpath, "rb") as f:
         data = pickle.load(f)
     return data
+
+def show(mat):
+    plt.figure(figsize = (3,3))
+    plt.axis("off")
+    plt.imshow(mat, cmap = "gray")
+    plt.show()
     
