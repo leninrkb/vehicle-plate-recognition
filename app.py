@@ -4,6 +4,7 @@ import base64
 
 class Person():
     def __init__(self) -> None:
+        self.ci = None
         self.name = None
         self.surname = None
         self.plate = None
@@ -45,6 +46,9 @@ class Info(fl.UserControl):
             ]
         )
         
+        self.tf_ci = fl.TextField(label = "C.I.")
+        self.tf_ci.value = self.entity.ci
+        
         self.tf_name = fl.TextField(label = "Nombres")
         self.tf_name.value = self.entity.name
         
@@ -59,7 +63,8 @@ class Info(fl.UserControl):
         
         info = fl.Column(
             controls = [
-                self.tf_name
+                self.tf_ci
+                ,self.tf_name
                 ,self.tf_surname
                 ,self.tf_model
                 ,self.tf_color
@@ -82,7 +87,11 @@ class Info(fl.UserControl):
         )
     
     def get_info(self) -> Person:
+        self.entity.ci = self.tf_ci.value
         self.entity.name = self.tf_name.value
+        self.entity.surname = self.tf_surname.value
+        self.entity.model = self.tf_model.value
+        self.entity.color = self.tf_color.value
         return self.entity
               
 class Create(fl.UserControl):
@@ -118,7 +127,11 @@ class Create(fl.UserControl):
     
     def create(self, e):
         entity = self.info.get_info()
+        print(entity.ci)
         print(entity.name)
+        print(entity.surname)
+        print(entity.color)
+        print(entity.model)
           
 class Recognition(fl.UserControl):
     def __init__(self, page:fl.Page):

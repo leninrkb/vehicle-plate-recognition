@@ -1,27 +1,30 @@
+from tensorflow.keras.models import load_model
+import data_preparation as dp
 import cv2 as cv
-import numpy as np
-import data_preparation as dp
-import pytesseract as pt
-import data_preparation as dp
 import utils as ut
-import data_extraction as dx
+def find_key(item):
+    for key, _item in classes.items():
+        if item == _item:
+            return key
+def predict(img):
+    ut.show(img[0])
+    y = loaded_model.predict(img)
+    y = y.tolist()
+    y = y[0]
+    ids = list(range(36))
+    y = list(zip(y, ids))
+    y = sorted(y, key = lambda y: y[0])
+    print(y[-1])
+    r = find_key(y[-1][1])
+    print(r)
 
-# data = ut.loadData("data_binary")
-# labels = ut.loadData("labels")
-# p = 21000
-
-# print(labels[p])
-
-# cv.imshow("data",data[p])
-# cv.waitKey(0)
-# cv.destroyAllWindows()
-
-
-print(3/2)
-print(4/3)
-print(5/4)
-print(14/9)
-print(16/9)
-print(4/1)
-print(16/10)
-print(9/16)
+classes = ut.loadData("./models/classes")
+print(classes)
+# ann 5 works well
+# ann 6 works well
+loaded_model = load_model("./models/ann_6")
+loaded_model.summary()
+img = cv.imread("/home/lenin/Documents/chars/b2.png", cv.IMREAD_GRAYSCALE)
+_, img = cv.threshold(img, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
+img = dp.prepare_img(img)
+predict(img)

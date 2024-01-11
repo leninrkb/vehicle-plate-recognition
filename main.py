@@ -69,9 +69,10 @@ def main():
             cv.imshow("roi", roi)
             chars = dp.chars(rect)
             if cv.waitKey(1) == ord("c") or capture:
+                capture = False
                 if len(chars) > 0:
                     start = time.time()
-                    pp.main(chars)
+                    pp.ann_predict(chars)
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
             del chars
         if cv.waitKey(1) == ord('q') or end:

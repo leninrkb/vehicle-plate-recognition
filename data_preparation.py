@@ -110,7 +110,6 @@ def prepare_img(mat, dim=28):
     mat = binarize(mat)
     mat = transformRect2Sqr(mat, pad=2)
     mat = cv.resize(mat, (dim, dim))
-    # mat = mat.astype("float64")
     mat = mat / 255
     mat = np.array([mat], dtype=np.uint8)
     return mat
