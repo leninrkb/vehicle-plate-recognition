@@ -1,5 +1,5 @@
 import cv2 as cv
-import  pickle 
+import pickle 
 import numpy as np
 import matplotlib.pyplot as plt 
 
@@ -20,8 +20,8 @@ def loadData(path):
         data = pickle.load(f)
     return data
 
-def show(mat):
-    plt.figure(figsize = (3,3))
+def show(mat, dim=3):
+    plt.figure(figsize = (dim,dim))
     plt.axis("off")
     plt.imshow(mat, cmap = "gray")
     plt.show()

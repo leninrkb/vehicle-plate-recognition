@@ -3,14 +3,14 @@ import numpy as np
 from scipy.spatial import distance
 import aspect_ratio as ar
 
-d = 3
-kernel_smooth = np.ones((d, d), np.float32) / (d * d)
-kernel_acc = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+kernel_smooth_size = 3
+kernel_smooth = np.ones((kernel_smooth_size, kernel_smooth_size), np.float32) / (kernel_smooth_size * kernel_smooth_size)
+kernel_accent = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
 
 
-def set_kernel_size(n):
+def set_kernel_smooth_size(size):
     global kernel_smooth
-    kernel_smooth = np.ones((n, n), np.float32) / (n * n)
+    kernel_smooth = np.ones((size, size), np.float32) / (size * size)
 
 
 def binarizeData(data: list):
@@ -40,47 +40,71 @@ def edges(img):
 
 
 def accent(img):
-    img = cv.filter2D(img, -1, kernel_acc)
+    img = cv.filter2D(img, -1, kernel_accent)
     return img
 
 
 def findRectangle(img, bin, roi):
-    contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(img, cv.RETR_TREE, cv.RETR_CCOMP)
     plate = None
     for contour in contours:
         epsilon = 0.08 * cv.arcLength(contour, True)
         apx = cv.approxPolyDP(contour, epsilon, True)
         if len(apx) == 4:
             area = cv.contourArea(contour)
-            if area > 1500:
+            if 1500 < area < 40000:
                 x, y, w, h = cv.boundingRect(contour)
                 aspect_ratio = w / h
-                if aspect_ratio >= 1 or ar.threshold(aspect_ratio):
-                    # print(aspect_ratio, area)
+                if aspect_ratio >= 1 or ar.threshold(aspect_ratio) or w > h:
                     plate = bin[y : y + h, x : x + w]
                     roi = cv.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                    # print("encontrado")
     return plate, roi
 
 
 def sortChars(chars):
     sorted_chars = sorted(chars, key=lambda x: x[1])
+    sorted_chars = [c[0] for c in sorted_chars]
     return sorted_chars
 
 
+# def chars(img):
+#     contours, _ = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+#     characters = []
+#     for contour in contours:
+#         area = cv.contourArea(contour)
+#         if area > 7:
+#             x, y, w, h = cv.boundingRect(contour)
+#             aspect_ratio = w / h
+#             if w < h and aspect_ratio :
+#                 ch = img[y : y + h, x : x + w]
+#                 characters.append((ch, x))
+#     # for i in range(len(characters)):
+#     #     cv.imshow(f"ch: {i}", characters[i][0])
+#     characters = sortChars(characters)
+#     characters = [c[0] for c in characters]
+#     return characters
+
 def chars(img):
-    contours, _ = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     characters = []
+    areas = []
     for contour in contours:
         area = cv.contourArea(contour)
         if area > 7:
             x, y, w, h = cv.boundingRect(contour)
-            aspect_ratio = w / h
-            if 0.4 <= aspect_ratio <= 0.6:
+            if w < h :
+                area =  h
+                areas.append(area)
                 ch = img[y : y + h, x : x + w]
-                characters.append((ch, x))
-    characters = sortChars(characters)
-    characters = [c[0] for c in characters]
-    return characters
+                characters.append((ch, x, area))
+    avg = np.average(areas)
+    std = np.std(area)
+    selected_chars = []
+    for char in characters:
+        if char[2] >= avg:
+            selected_chars.append(char)
+    return sortChars(selected_chars)
 
 
 def hamming_distance(x, y):
@@ -107,8 +131,7 @@ def transformRect2Sqr(img, pad=10):
 
 
 def prepare_img(mat, dim=28):
-    mat = binarize(mat)
-    mat = transformRect2Sqr(mat, pad=2)
+    mat = transformRect2Sqr(mat, pad=1)
     mat = cv.resize(mat, (dim, dim))
     mat = mat / 255
     mat = np.array([mat], dtype=np.uint8)

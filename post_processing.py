@@ -4,12 +4,14 @@ import numpy as np
 import cv2 as cv
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+import data_preparation as dp
 
 # model = ut.loadData("./models/augmented_knn")
 # model = ut.loadData("./models/knn")
 # model = ut.loadData("./models/svm_poly")
 # model = ut.loadData("svm_rbf")
-model = load_model("./models/ann_7")
+# model = load_model("./models/ann_7")
+model = load_model("./models/cnn")
 classes = ut.loadData("./models/classes")
 
 
@@ -29,16 +31,24 @@ def find_key(item):
     for key, _item in classes.items():
         if item == _item:
             return key
-        
+
+def predict(img):
+    ut.show(img[0])
+    y = model.predict(img)
+    y = y.tolist()
+    y = y[0]
+    ids = list(range(36))
+    y = list(zip(y, ids))
+    y = sorted(y, key = lambda y: y[0])
+    print(y[-1])
+    r = find_key(y[-1][1])
+    print(r)
+     
 def ann_predict(data):
-    data = [dp.transformRect2Sqr(img, pad=2) for img in data]
-    dp.resizeData(data, 28)
-    for i, c in enumerate(data):
-        cv.imshow(f"char: {i}", c)
-        cv.imwrite(f"./img/{i}.png",c)
     plate = []
     for mat in data:
-        y = model.predict(np.array([mat], dtype=np.uint8))
+        mat = dp.prepare_img(mat)
+        y = model.predict(mat)
         y = y.tolist()
         y = y[0]
         ids = list(range(36))

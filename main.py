@@ -9,6 +9,7 @@ import time
 capture = False
 end = False
 cap = cv.VideoCapture(0)
+dp.set_kernel_smooth_size(5)
 
 def capture_frame():
     global capture
@@ -49,28 +50,30 @@ def main():
         # cv.imshow("roi", roi)
         
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
-        # cv.imshow("roi gray", gray)
+        gray = cv.convertScaleAbs(gray, alpha=1.8, beta=0)
+        # cv.imshow("1 roi gray", gray)
         
         # smooth = dp.smooth(gray)
-        # cv.imshow("roi smooth", smooth)
+        # cv.imshow("2 roi smooth", smooth)
         
-        # acc = dp.accent(gray)
-        # cv.imshow("roi accent", acc)
+        # acc = dp.accent(smooth)
+        # cv.imshow("3 roi accent", acc)
         
         bin = dp.binarize(gray)
-        # cv.imshow("roi bin", bin)
+        # cv.imshow("4 roi bin", bin)
         
-        edges = dp.edges(bin)
-        # cv.imshow("roi edges", edges)
+        # edges = dp.edges(bin)
+        # cv.imshow("5 roi edges", edges)
         
-        rect, roi = dp.findRectangle(edges, bin, roi)
+        rect, roi = dp.findRectangle(bin, bin, roi)
         if not rect is None:
-            cv.imshow("plate", rect)
-            cv.imshow("roi", roi)
+            cv.imshow("6 plate", rect)
+            cv.imshow("7 roi", roi)
             chars = dp.chars(rect)
             if cv.waitKey(1) == ord("c") or capture:
+                print("chars...")
                 capture = False
-                if len(chars) > 0:
+                if not chars == None and len(chars) > 0:
                     start = time.time()
                     pp.ann_predict(chars)
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
@@ -79,6 +82,7 @@ def main():
             break
     cap.release()
     cv.destroyAllWindows()
+    end = False
 
-# main()
+main()
 # main()
