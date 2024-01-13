@@ -79,10 +79,10 @@ def main():
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
             del chars
         if cv.waitKey(1) == ord('q') or end:
+            end = False
             break
     cap.release()
     cv.destroyAllWindows()
-    end = False
 
-main()
+# main()
 # main()
