@@ -259,37 +259,35 @@ class PersonList(fl.UserControl):
         super().__init__()
         self.storage = storage
         self.page = page
-        
-    def load_list(self):
+
+    def build(self):
+        grid = fl.GridView(
+            expand=1,
+            runs_count=5,
+            max_extent=150,
+            child_aspect_ratio=1.0,
+            spacing=5,
+            run_spacing=5,
+        )
         keys = self.storage.registry.keys()
-        list = []
-        for key in keys:
-            entity = self.storage.registry[key]
-            item = fl.Card(
-                content=fl.Container(
-                    padding=10
-                    ,width=200
-                    ,height=200
-                    ,content=fl.Text(
-                        value=entity.name
-                        ,style=fl.TextThemeStyle.HEADLINE_SMALL
+        for k in keys:
+            entity:Person = self.storage.registry[k]
+            grid.controls.append(
+                fl.Card(
+                    content=fl.Container(
+                        padding=10
+                        ,width=100
+                        ,content=fl.Text(
+                            value=entity.ci
+                        )
                     )
                 )
             )
-            list.append(item)
-        return list
-
-    def build(self):
-        list = self.load_list()
-        return fl.Column(
-            wrap=True
-            ,scroll="always"
-            ,expand=True
-            ,controls=list
+        return fl.Container(
+            padding=10
+            ,content=grid
+            ,width=500
         )
-
-
-
 
 def main(page: fl.Page):
     def on_close(e):
@@ -316,6 +314,12 @@ def main(page: fl.Page):
     content = pages[0]
     row = fl.Row(expand=True, controls=[rail, fl.VerticalDivider(width=1), content])
     page.add(row)
+    # page.add(fl.Row(
+    #     controls=[
+    #         PersonList(page, storage)
+    #     ],
+    #     expand=True
+    # ))
 
 
 fl.app(target=main, assets_dir="assets")

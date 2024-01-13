@@ -1,30 +1,32 @@
-from tensorflow.keras.models import load_model
-import data_preparation as dp
-import cv2 as cv
-import utils as ut
-def find_key(item):
-    for key, _item in classes.items():
-        if item == _item:
-            return key
-def predict(img):
-    ut.show(img[0])
-    y = loaded_model.predict(img)
-    y = y.tolist()
-    y = y[0]
-    ids = list(range(36))
-    y = list(zip(y, ids))
-    y = sorted(y, key = lambda y: y[0])
-    print(y[-1])
-    r = find_key(y[-1][1])
-    print(r)
+import flet as ft
 
-classes = ut.loadData("./models/classes")
-print(classes)
-# ann 5 works well
-# ann 6 works well
-loaded_model = load_model("./models/ann_6")
-loaded_model.summary()
-img = cv.imread("/home/lenin/Documents/chars/b2.png", cv.IMREAD_GRAYSCALE)
-_, img = cv.threshold(img, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU)
-img = dp.prepare_img(img)
-predict(img)
+def main(page: ft.Page):
+    page.title = "GridView Example"
+    page.theme_mode = ft.ThemeMode.DARK
+    page.padding = 50
+    page.update()
+
+    images = ft.GridView(
+        expand=1,
+        runs_count=5,
+        max_extent=150,
+        child_aspect_ratio=1.0,
+        spacing=5,
+        run_spacing=5,
+    )
+
+    page.add(images)
+
+    for i in range(17):
+        images.controls.append(
+            ft.Card(
+                content=ft.Container(
+                    width=100
+                    ,height=100
+                    ,content=ft.Text("asd")
+                )
+            )
+        )
+    page.update()
+
+ft.app(target=main)
