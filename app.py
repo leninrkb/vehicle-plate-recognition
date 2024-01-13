@@ -33,7 +33,6 @@ class Storage():
         
 class Person:
     def __init__(self) -> None:
-        self.ci = None
         self.name = None
         self.surname = None
         self.plate = None
@@ -43,12 +42,11 @@ class Person:
         self.base64_photo = None
         
     def show_info(self):
-        print(self.ci)
-        print(self.name)
-        print(self.surname)
-        print(self.plate)
-        print(self.model)
-        print(self.color)
+        print("name:",self.name)
+        print("surname:",self.surname)
+        print("plate:",self.plate)
+        print("model:",self.model)
+        print("color:",self.color)
 
 class Info(fl.UserControl):
     def __init__(self, entity: Person):
@@ -83,8 +81,8 @@ class Info(fl.UserControl):
             ]
         )
 
-        self.tf_ci = fl.TextField(label="C.I.")
-        self.tf_ci.value = self.entity.ci
+        self.tf_plate = fl.TextField(label="Placa")
+        self.tf_plate.value = self.entity.plate
 
         self.tf_name = fl.TextField(label="Nombres")
         self.tf_name.value = self.entity.name
@@ -100,7 +98,7 @@ class Info(fl.UserControl):
 
         info = fl.Column(
             controls=[
-                self.tf_ci,
+                self.tf_plate,
                 self.tf_name,
                 self.tf_surname,
                 self.tf_model,
@@ -119,12 +117,20 @@ class Info(fl.UserControl):
         )
 
     def get_info(self) -> Person:
-        self.entity.ci = self.tf_ci.value
-        self.entity.name = self.tf_name.value
-        self.entity.surname = self.tf_surname.value
-        self.entity.model = self.tf_model.value
-        self.entity.color = self.tf_color.value
-        return self.entity
+        entity = Person()
+        entity.plate = self.tf_plate.value
+        entity.name = self.tf_name.value
+        entity.surname = self.tf_surname.value
+        entity.model = self.tf_model.value
+        entity.color = self.tf_color.value
+        return entity
+    
+    def clear(self):
+        self.tf_plate.value = ""
+        self.tf_name.value = ""
+        self.tf_surname.value = ""
+        self.tf_color.value = ""
+        self.tf_model.value = ""
 
 class Create(fl.UserControl):
     def __init__(self, page: fl.Page, storage: Storage) -> None:
@@ -151,10 +157,11 @@ class Create(fl.UserControl):
 
     def save(self, e):
         entity = self.info.get_info()
-        self.storage.registry[entity.ci] = entity
+        self.storage.registry[entity.plate] = entity
         self.storage.changed = True
         display = DisplayInfo(self.page)
         display.show("Guardando...")
+        self.info.clear()
 
 class Recognition(fl.UserControl):
     def __init__(self, page: fl.Page):
@@ -164,7 +171,7 @@ class Recognition(fl.UserControl):
         self.window_width = self.page.window_width
 
     def build(self):
-        return fl.Column(
+        options = fl.Column(
             controls=[
                 fl.Card(
                     expand=True,
@@ -191,6 +198,12 @@ class Recognition(fl.UserControl):
                         ),
                     ),
                 )
+            ]
+        )
+        self.result = Info(Person())
+        return fl.Row(
+            controls=[
+                options, self.result
             ]
         )
 
@@ -278,7 +291,7 @@ class PersonList(fl.UserControl):
                         padding=10
                         ,width=100
                         ,content=fl.Text(
-                            value=entity.ci
+                            value=entity.plate
                         )
                     )
                 )
@@ -314,12 +327,6 @@ def main(page: fl.Page):
     content = pages[0]
     row = fl.Row(expand=True, controls=[rail, fl.VerticalDivider(width=1), content])
     page.add(row)
-    # page.add(fl.Row(
-    #     controls=[
-    #         PersonList(page, storage)
-    #     ],
-    #     expand=True
-    # ))
 
 
 fl.app(target=main, assets_dir="assets")
