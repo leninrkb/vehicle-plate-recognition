@@ -1,15 +1,20 @@
-import data_extraction as dx
 import data_preparation as dp
-import utils as ut
-import numpy as np
 import cv2 as cv
-import post_processing as pp
+import post_processing
 import time
+import asyncio
 
 capture = False
 end = False
-cap = cv.VideoCapture(0)
 dp.set_kernel_smooth_size(5)
+video_width = 480 # original
+video_height = 640 # original
+width = 150 # roi
+height = 250 # roi
+top_left = (video_height//2 - height, video_width//2 - width)
+bottom_right = ( video_height//2 + height, video_width//2 + width)
+padd = 10
+
 
 def capture_frame():
     global capture
@@ -19,34 +24,30 @@ def end_recognition():
     global end
     end = True
     
-def main():
+async def count():
+    for i in range(5):
+        print(i)
+        time.sleep(1)
+    
+def recognition(predict_mode, find_method):
     global capture
     global end
     capture = False
     end = False
-    video_width = 480
-    video_height = 640
-    width = 150
-    height = 250
-    top_left = (video_height//2 - height, video_width//2 - width)
-    bottom_right = ( video_height//2 + height, video_width//2 + width)
-
-    cap.open(0)
+    cap = cv.VideoCapture(0)
+    
     if not cap.isOpened():
         print("Cannot open camera")
         exit()
     
-        
     while True:
         ret, frame = cap.read()
         if not ret:
-            print("Can't receive frame (stream end?). Exiting ...")
             break
         cv.rectangle(frame, top_left, bottom_right, (0,255,0), 1)
         cv.imshow("frame",frame)
         # 
-        s = 10
-        roi = frame[top_left[1]+s:bottom_right[1]-s, top_left[0]+s:bottom_right[0]-s]
+        roi = frame[top_left[1]+padd:bottom_right[1]-padd, top_left[0]+padd:bottom_right[0]-padd]
         # cv.imshow("roi", roi)
         
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
@@ -67,22 +68,29 @@ def main():
         
         rect, roi = dp.findRectangle(bin, bin, roi)
         if not rect is None:
+            rect = dp.smooth(rect)
+            rect = dp.smooth(rect)
+            rect = dp.accent(rect)
+            rect = dp.binarize(rect)
+            rect = dp.binarize(rect)
+            # rect = dp.accent(rect)
             cv.imshow("6 plate", rect)
-            cv.imshow("7 roi", roi)
+            # cv.imshow("7 roi", roi)
             chars = dp.chars(rect)
             if cv.waitKey(1) == ord("c") or capture:
                 print("chars...")
                 capture = False
                 if not chars == None and len(chars) > 0:
                     start = time.time()
-                    pp.ann_predict(chars)
+                    plate = predict_mode(chars)
+                    find_method(plate)
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
-            del chars
         if cv.waitKey(1) == ord('q') or end:
             end = False
             break
     cap.release()
     cv.destroyAllWindows()
 
-# main()
-# main()
+
+if __name__ == "__main__":
+    recognition(post_processing.nn)

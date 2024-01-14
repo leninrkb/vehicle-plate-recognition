@@ -2,6 +2,8 @@ import flet as fl
 import main as recognition_logic
 import base64
 import utils as ut
+import asyncio
+import post_processing
 
 class Storage():
     def __init__(self, page:fl.Page):
@@ -54,6 +56,12 @@ class Info(fl.UserControl):
         self.entity = entity
 
     def build(self):
+        self.txt_plate = fl.Text(
+            value=self.entity.plate
+            ,style=fl.TextThemeStyle.TITLE_LARGE
+            ,color=fl.colors.INVERSE_PRIMARY
+            ,weight=fl.FontWeight.BOLD
+        )
         imgs = fl.Column(
             controls=[
                 fl.Text(
@@ -72,12 +80,7 @@ class Info(fl.UserControl):
                     style=fl.TextThemeStyle.DISPLAY_SMALL,
                     weight=fl.FontWeight.BOLD,
                 ),
-                fl.Image(
-                    src="./assets/sample.png",
-                    border_radius=10,
-                    fit=fl.ImageFit.COVER,
-                    width=200,
-                ),
+                self.txt_plate
             ]
         )
 
@@ -116,6 +119,15 @@ class Info(fl.UserControl):
             ]
         )
 
+    def update_fields(self):
+        self.tf_plate.value = self.entity.plate
+        self.tf_name.value = self.entity.name
+        self.tf_surname.value = self.entity.surname
+        self.tf_color.value = self.entity.color
+        self.tf_model.value = self.entity.model
+        self.txt_plate.value = self.entity.plate
+        self.update()
+        
     def get_info(self) -> Person:
         entity = Person()
         entity.plate = self.tf_plate.value
@@ -164,11 +176,15 @@ class Create(fl.UserControl):
         self.info.clear()
 
 class Recognition(fl.UserControl):
-    def __init__(self, page: fl.Page):
+    def __init__(self, page: fl.Page, storage: Storage, update_method):
         super().__init__()
         self.started = False
         self.page = page
         self.window_width = self.page.window_width
+        self.storage = storage
+        self.info = Info(Person())
+        self.update_method = update_method
+        self.display = DisplayInfo(self.page)
 
     def build(self):
         options = fl.Column(
@@ -193,28 +209,59 @@ class Recognition(fl.UserControl):
                                     text="Terminar",
                                     icon=fl.icons.CANCEL,
                                     on_click=self.end_recognition,
-                                ),
+                                )
+                                ,fl.TextButton(
+                                    text="Reducir",
+                                    icon=fl.icons.ARROW_BACK_IOS,
+                                    on_click=self.reduce_window,
+                                )
+                                ,fl.TextButton(
+                                    text="Expandir",
+                                    icon=fl.icons.ARROW_FORWARD_IOS,
+                                    on_click=self.restore_window,
+                                )
+                                ,fl.OutlinedButton(
+                                    text="update"
+                                    ,on_click= lambda _: self.find_person("LENIN")
+                                )
                             ]
                         ),
                     ),
                 )
             ]
         )
-        self.result = Info(Person())
-        return fl.Row(
+        self.menu =  fl.Row(
             controls=[
-                options, self.result
+                options, self.info
             ]
         )
+        return self.menu
+    
+    def find_person(self, plate):
+        try:
+            entity = self.storage.registry[plate]
+            self.info.entity = entity
+            self.info.update_fields()
+            self.display.show(f"Placa {entity.plate} econtrado!!!")
+        except:
+            self.info.entity.plate = plate
+            self.info.update_fields()
+            self.display.show(f"No se encuentra la placa: {plate}")
+        
+    def restore_window(self, e=None):
+        self.page.window_width = self.window_width
+        self.page.update()
+        
+    def reduce_window(self, e=None):
+        self.page.window_width = self.window_width * 0.22
+        self.page.update()
 
     def start_recognition(self, e):
         self.started = True
-        self.page.window_width = self.window_width * 0.25
-        self.page.update()
-        recognition_logic.main()
-        self.page.window_width = self.window_width
-        self.page.update()
-        self.startes = False
+        self.reduce_window()
+        recognition_logic.recognition(post_processing.nn, self.find_person)
+        self.restore_window()
+        self.started = False
 
     def capture_frame(self, e):
         if self.started:
@@ -231,7 +278,7 @@ class Navigation(fl.UserControl):
         self.set_page = set_page
 
     def build(self):
-        rail = fl.NavigationRail(
+        return fl.NavigationRail(
             selected_index=0,
             label_type=fl.NavigationRailLabelType.ALL,
             destinations=[
@@ -249,7 +296,6 @@ class Navigation(fl.UserControl):
             ],
             on_change=lambda e: self.set_page(e.control.selected_index),
         )
-        return rail
 
 class DisplayInfo(fl.UserControl):
     def __init__(self, page: fl.Page):
@@ -311,6 +357,9 @@ def main(page: fl.Page):
     def set_page(index):
         row.controls[2] = pages[index]
         page.update()
+    def update():
+        page.update()
+        print("actualizando page")
     # 
     page.title = "Placas"
     page.theme_mode = fl.ThemeMode.SYSTEM
@@ -321,7 +370,7 @@ def main(page: fl.Page):
     storage = Storage(page)
     page1 = Create(page, storage)
     page2 = PersonList(page, storage)
-    page3 = Recognition(page)
+    page3 = Recognition(page, storage, update)
     pages = [page1, page2, page3]
     rail = Navigation(set_page)
     content = pages[0]

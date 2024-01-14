@@ -44,21 +44,20 @@ def accent(img):
     return img
 
 
-def findRectangle(img, bin, roi):
+def findRectangle(img, roi_bin, roi):
     contours, _ = cv.findContours(img, cv.RETR_TREE, cv.RETR_CCOMP)
     plate = None
     for contour in contours:
-        epsilon = 0.08 * cv.arcLength(contour, True)
+        epsilon = 0.08 * cv.arcLength(contour, True) # establece el umbral par que un poligono sea tomando en cuenta como cuadrangular
         apx = cv.approxPolyDP(contour, epsilon, True)
         if len(apx) == 4:
             area = cv.contourArea(contour)
             if 1500 < area < 40000:
-                x, y, w, h = cv.boundingRect(contour)
+                x, y, w, h = cv.boundingRect(contour) # retorna los puntos del objeto
                 aspect_ratio = w / h
                 if aspect_ratio >= 1 or ar.threshold(aspect_ratio) or w > h:
-                    plate = bin[y : y + h, x : x + w]
+                    plate = roi_bin[y : y + h, x : x + w]
                     roi = cv.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 2)
-                    # print("encontrado")
     return plate, roi
 
 
@@ -67,23 +66,6 @@ def sortChars(chars):
     sorted_chars = [c[0] for c in sorted_chars]
     return sorted_chars
 
-
-# def chars(img):
-#     contours, _ = cv.findContours(img, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-#     characters = []
-#     for contour in contours:
-#         area = cv.contourArea(contour)
-#         if area > 7:
-#             x, y, w, h = cv.boundingRect(contour)
-#             aspect_ratio = w / h
-#             if w < h and aspect_ratio :
-#                 ch = img[y : y + h, x : x + w]
-#                 characters.append((ch, x))
-#     # for i in range(len(characters)):
-#     #     cv.imshow(f"ch: {i}", characters[i][0])
-#     characters = sortChars(characters)
-#     characters = [c[0] for c in characters]
-#     return characters
 
 def chars(img):
     contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -99,7 +81,6 @@ def chars(img):
                 ch = img[y : y + h, x : x + w]
                 characters.append((ch, x, area))
     avg = np.average(areas)
-    std = np.std(area)
     selected_chars = []
     for char in characters:
         if char[2] >= avg:

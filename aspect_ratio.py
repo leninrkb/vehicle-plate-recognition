@@ -3,6 +3,10 @@ def large(aspect_ratio):
         return True
     return False
 
+def small(aspect_ratio):
+    if 1.2 <= aspect_ratio <= 1.8:
+        return True
+    return False
 
 def threshold(aspect_ratio):
     return large(aspect_ratio)

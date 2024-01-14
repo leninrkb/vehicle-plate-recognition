@@ -15,6 +15,13 @@ model = load_model("./models/cnn")
 classes = ut.loadData("./models/classes")
 
 
+def find_key(item):
+    for key, _item in classes.items():
+        if item == _item:
+            return key
+
+    
+# knn svm dt
 def main(data):
     print("starting classifier...")
     data = [dp.accent(img) for img in data]
@@ -26,25 +33,12 @@ def main(data):
     data = dp.flattenData(data)
     y = model.predict(data)
     print(y)
+    plate = "".join(y)
+    return plate
 
-def find_key(item):
-    for key, _item in classes.items():
-        if item == _item:
-            return key
 
-def predict(img):
-    ut.show(img[0])
-    y = model.predict(img)
-    y = y.tolist()
-    y = y[0]
-    ids = list(range(36))
-    y = list(zip(y, ids))
-    y = sorted(y, key = lambda y: y[0])
-    print(y[-1])
-    r = find_key(y[-1][1])
-    print(r)
-     
-def ann_predict(data):
+# ann cnn
+def nn(data):
     plate = []
     for mat in data:
         mat = dp.prepare_img(mat)
@@ -56,7 +50,9 @@ def ann_predict(data):
         y = sorted(y, key = lambda y: y[0])
         r = find_key(y[-1][1])
         plate.append(r)
+    plate = "".join(plate)
     print(plate)
+    return plate
         
     
 
