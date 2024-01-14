@@ -220,15 +220,13 @@ class Recognition(fl.UserControl):
                                     icon=fl.icons.ARROW_FORWARD_IOS,
                                     on_click=self.restore_window,
                                 )
-                                ,fl.Column(
-                                    controls=[
-                                        fl.Text("Auto")
-                                        ,fl.Switch()
-                                    ]
+                                ,fl.Switch(
+                                    label="Auto"
+                                    ,on_change=self.set_auto
                                 )
                                 ,fl.OutlinedButton(
                                     text="update"
-                                    ,on_click= lambda _: self.find_person("LENIN")
+                                    ,on_click= lambda _: self.find_person("")
                                 )
                             ]
                         ),
@@ -277,6 +275,9 @@ class Recognition(fl.UserControl):
         if self.started:
             recognition_logic.end_recognition()
             self.started = False
+            
+    def set_auto(self, e=None):
+        recognition_logic.set_auto()
 
 class Navigation(fl.UserControl):
     def __init__(self, set_page) -> None:

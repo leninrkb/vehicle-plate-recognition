@@ -4,6 +4,7 @@ import post_processing
 import time
 import asyncio
 
+auto = False
 capture = False
 end = False
 dp.set_kernel_smooth_size(5)
@@ -15,6 +16,9 @@ top_left = (video_height//2 - height, video_width//2 - width)
 bottom_right = ( video_height//2 + height, video_width//2 + width)
 padd = 10
 
+def set_auto():
+    global auto
+    auto = not auto
 
 def capture_frame():
     global capture
@@ -32,6 +36,7 @@ async def count():
 def recognition(predict_mode, find_method=None):
     global capture
     global end
+    global auto
     capture = False
     end = False
     cap = cv.VideoCapture(0)
@@ -78,7 +83,7 @@ def recognition(predict_mode, find_method=None):
             cv.imshow("6 plate", rect)
             # cv.imshow("7 roi", roi)
             chars = dp.chars(rect)
-            if cv.waitKey(1) == ord("c") or cv.waitKey(1) == ord("C") or capture:
+            if cv.waitKey(1) == ord("c") or cv.waitKey(1) == ord("C") or capture or auto:
                 print("chars...")
                 capture = False
                 if not chars == None and len(chars) > 0:
@@ -88,6 +93,7 @@ def recognition(predict_mode, find_method=None):
                     print(f"time: {time.time() - start}", end="\n ------------ \n")
         if cv.waitKey(1) == ord('q') or end:
             end = False
+            set_auto()
             break
     cap.release()
     cv.destroyAllWindows()
