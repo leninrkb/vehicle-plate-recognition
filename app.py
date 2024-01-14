@@ -7,7 +7,7 @@ import post_processing
 
 class Storage():
     def __init__(self, page:fl.Page):
-        self.data_name = "flet_data"
+        self.data_name = "./models/flet_data"
         self.changed = False
         self.page = page
         self.check_storage()
