@@ -29,7 +29,7 @@ async def count():
         print(i)
         time.sleep(1)
     
-def recognition(predict_mode, find_method):
+def recognition(predict_mode, find_method=None):
     global capture
     global end
     capture = False
@@ -44,6 +44,7 @@ def recognition(predict_mode, find_method):
         ret, frame = cap.read()
         if not ret:
             break
+        frame = cv.resize(frame, (video_height, video_width))
         cv.rectangle(frame, top_left, bottom_right, (0,255,0), 1)
         cv.imshow("frame",frame)
         # 

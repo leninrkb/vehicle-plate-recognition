@@ -220,6 +220,12 @@ class Recognition(fl.UserControl):
                                     icon=fl.icons.ARROW_FORWARD_IOS,
                                     on_click=self.restore_window,
                                 )
+                                ,fl.Column(
+                                    controls=[
+                                        fl.Text("Auto")
+                                        ,fl.Switch()
+                                    ]
+                                )
                                 ,fl.OutlinedButton(
                                     text="update"
                                     ,on_click= lambda _: self.find_person("LENIN")
