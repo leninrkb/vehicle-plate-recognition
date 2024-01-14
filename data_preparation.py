@@ -44,7 +44,7 @@ def accent(img):
     return img
 
 
-def findRectangle(img, roi_bin, roi):
+def findRectangle(img, roi_bin, roi, padd=3):
     contours, _ = cv.findContours(img, cv.RETR_TREE, cv.RETR_CCOMP)
     plate = None
     for contour in contours:
@@ -56,7 +56,7 @@ def findRectangle(img, roi_bin, roi):
                 x, y, w, h = cv.boundingRect(contour) # retorna los puntos del objeto
                 aspect_ratio = w / h
                 if aspect_ratio >= 1 or ar.threshold(aspect_ratio) or w > h:
-                    plate = roi_bin[y : y + h, x : x + w]
+                    plate = roi_bin[y + padd : y + h - padd, x + padd : x + w - padd]
                     roi = cv.rectangle(roi, (x, y), (x + w, y + h), (0, 255, 0), 2)
     return plate, roi
 
@@ -67,23 +67,43 @@ def sortChars(chars):
     return sorted_chars
 
 
+# def chars(img):
+#     contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+#     characters = []
+#     areas = []
+#     for contour in contours:
+#         area = cv.contourArea(contour)
+#         if area > 7:
+#             x, y, w, h = cv.boundingRect(contour)
+#             if w < h :
+#                 area =  h
+#                 areas.append(area)
+#                 ch = img[y : y + h, x : x + w]
+#                 characters.append((ch, x, area))
+#     avg = np.average(areas)
+#     selected_chars = []
+#     for char in characters:
+#         if char[2] >= avg:
+#             selected_chars.append(char)
+#     return sortChars(selected_chars)
+
 def chars(img):
     contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     characters = []
     areas = []
     for contour in contours:
         area = cv.contourArea(contour)
-        if area > 7:
+        if area > 10:
             x, y, w, h = cv.boundingRect(contour)
             if w < h :
                 area =  h
                 areas.append(area)
                 ch = img[y : y + h, x : x + w]
-                characters.append((ch, x, area))
+                characters.append((ch, x, area, w, h))
     avg = np.average(areas)
     selected_chars = []
     for char in characters:
-        if char[2] >= avg:
+        if char[2] >= avg and char[3] > 5:
             selected_chars.append(char)
     return sortChars(selected_chars)
 
@@ -112,7 +132,7 @@ def transformRect2Sqr(img, pad=10):
 
 
 def prepare_img(mat, dim=28):
-    mat = transformRect2Sqr(mat, pad=1)
+    mat = transformRect2Sqr(mat, pad=4)
     mat = cv.resize(mat, (dim, dim))
     mat = mat / 255
     mat = np.array([mat], dtype=np.uint8)

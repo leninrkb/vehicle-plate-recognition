@@ -51,7 +51,7 @@ def nn(data):
         r = find_key(y[-1][1])
         plate.append(r)
     plate = "".join(plate)
-    print(plate)
+    print("nn: ",plate)
     return plate
         
     

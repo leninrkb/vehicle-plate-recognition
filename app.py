@@ -323,7 +323,7 @@ class PersonList(fl.UserControl):
         grid = fl.GridView(
             expand=1,
             runs_count=5,
-            max_extent=150,
+            max_extent=200,
             child_aspect_ratio=1.0,
             spacing=5,
             run_spacing=5,
@@ -335,9 +335,17 @@ class PersonList(fl.UserControl):
                 fl.Card(
                     content=fl.Container(
                         padding=10
-                        ,width=100
-                        ,content=fl.Text(
-                            value=entity.plate
+                        ,content=fl.Column(
+                            controls=[
+                                fl.Text(entity.plate)
+                                ,fl.Text(entity.name)
+                                ,fl.Image(
+                                    src="./assets/lustre.png"
+                                    ,fit=fl.ImageFit.FILL
+                                    ,width=60
+                                    ,border_radius=fl.border_radius.all(5)
+                                )
+                            ]
                         )
                     )
                 )

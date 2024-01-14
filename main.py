@@ -69,8 +69,8 @@ def recognition(predict_mode, find_method):
         rect, roi = dp.findRectangle(bin, bin, roi)
         if not rect is None:
             rect = dp.smooth(rect)
-            rect = dp.smooth(rect)
-            rect = dp.accent(rect)
+            # rect = dp.smooth(rect)
+            # rect = dp.accent(rect)
             rect = dp.binarize(rect)
             rect = dp.binarize(rect)
             # rect = dp.accent(rect)
