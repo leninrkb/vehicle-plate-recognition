@@ -255,7 +255,7 @@ class Recognition(fl.UserControl):
             entity.plate = plate
             self.info.entity = entity
             self.info.update_fields()
-            self.display.show(f"Placa detectada: {plate}")
+            self.display.show(f"La placa: {plate} no esta en la base de datos")
         finally:
             print("finally: ",plate)
         
