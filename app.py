@@ -204,11 +204,15 @@ class Recognition(fl.UserControl):
                                     text="Capturar",
                                     icon=fl.icons.SCREENSHOT_MONITOR_ROUNDED,
                                     on_click=self.capture_frame,
-                                ),
-                                fl.TextButton(
-                                    text="Terminar",
-                                    icon=fl.icons.CANCEL,
-                                    on_click=self.end_recognition,
+                                )
+                                ,fl.Switch(
+                                    label="Auto"
+                                    ,on_change=self.set_auto
+                                )
+                                ,fl.TextButton(
+                                    text="Limpiar"
+                                    ,icon=fl.icons.CLEAR_ALL_ROUNDED
+                                    ,on_click= lambda _: self.find_person("")
                                 )
                                 ,fl.TextButton(
                                     text="Reducir",
@@ -220,13 +224,10 @@ class Recognition(fl.UserControl):
                                     icon=fl.icons.ARROW_FORWARD_IOS,
                                     on_click=self.restore_window,
                                 )
-                                ,fl.Switch(
-                                    label="Auto"
-                                    ,on_change=self.set_auto
-                                )
-                                ,fl.OutlinedButton(
-                                    text="update"
-                                    ,on_click= lambda _: self.find_person("")
+                                ,fl.TextButton(
+                                    text="Terminar",
+                                    icon=fl.icons.CANCEL,
+                                    on_click=self.end_recognition,
                                 )
                             ]
                         ),
@@ -246,11 +247,15 @@ class Recognition(fl.UserControl):
             entity = self.storage.registry[plate]
             self.info.entity = entity
             self.info.update_fields()
-            self.display.show(f"Placa {entity.plate} econtrado!!!")
+            self.display.show(f"Placa {entity.plate} econtrado!")
         except:
-            self.info.entity.plate = plate
+            entity = Person()
+            entity.plate = plate
+            self.info.entity = entity
             self.info.update_fields()
             self.display.show(f"No se encuentra la placa: {plate}")
+        finally:
+            print("finally: ",plate)
         
     def restore_window(self, e=None):
         self.page.window_width = self.window_width
