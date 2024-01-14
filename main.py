@@ -78,7 +78,7 @@ def recognition(predict_mode, find_method=None):
             cv.imshow("6 plate", rect)
             # cv.imshow("7 roi", roi)
             chars = dp.chars(rect)
-            if cv.waitKey(1) == ord("c") or capture:
+            if cv.waitKey(1) == ord("c") or cv.waitKey(1) == ord("C") or capture:
                 print("chars...")
                 capture = False
                 if not chars == None and len(chars) > 0:
