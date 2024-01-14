@@ -171,6 +171,8 @@ class Create(fl.UserControl):
         entity = self.info.get_info()
         self.storage.registry[entity.plate] = entity
         self.storage.changed = True
+        self.info.entity = Person()
+        self.info.update_fields()
         display = DisplayInfo(self.page)
         display.show("Guardando...")
         self.info.clear()
@@ -330,6 +332,7 @@ class PersonList(fl.UserControl):
         super().__init__()
         self.storage = storage
         self.page = page
+        self.display = DisplayInfo(page)
 
     def build(self):
         grid = fl.GridView(
@@ -362,11 +365,36 @@ class PersonList(fl.UserControl):
                     )
                 )
             )
-        return fl.Container(
+        container_grid = fl.Container(
             padding=10
             ,content=grid
             ,width=500
         )
+        options = fl.Card(
+            content=fl.Container(
+                padding=10
+                ,content=fl.Column(
+                    controls=[
+                        fl.TextButton(
+                            text="guardar todo"
+                            ,icon=fl.icons.SAVE
+                            ,on_click=self.save_all
+                        )
+                    ]
+                )
+            )
+        )
+        return fl.Row(
+            controls=[
+                options, container_grid
+            ]
+        )
+    
+    def save_all(self, e=None):
+        if self.storage.changed:
+            self.display.show("Guardando todos los datos...")
+        self.storage.save()
+        
 
 def main(page: fl.Page):
     def on_close(e):
