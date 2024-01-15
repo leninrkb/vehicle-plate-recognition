@@ -69,8 +69,8 @@ def recognition(predict_mode, find_method=None):
         bin = dp.binarize(gray)
         # cv.imshow("4 roi bin", bin)
         
-        # edges = dp.edges(bin)
-        # cv.imshow("5 roi edges", edges)
+        edges = dp.edges(bin)
+        cv.imshow("5 roi edges", edges)
         
         rect, roi = dp.findRectangle(bin, bin, roi)
         if not rect is None:
