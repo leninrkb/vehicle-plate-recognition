@@ -11,9 +11,16 @@
 - write binarized dataset
 - load binary dataset
 - save data-labels array as binary file to faster load later
+- define an CNN arquitechture
+- train
+- choose a framework to build GUI (Flet)
+- Integrate the model with GUI
+- Test
+- Fix bugs
+- Improve the model
 
 
-# Screeshots
+# Screenshots
 ![image](https://github.com/leninrkb/vehicle-plate-recognition/assets/67330101/16a6fbd4-b178-4cb1-af57-22a856095cb7)
 ![image](https://github.com/leninrkb/vehicle-plate-recognition/assets/67330101/0d0dcecd-182b-4483-b74b-3c19b2d6f5da)
 ![image](https://github.com/leninrkb/vehicle-plate-recognition/assets/67330101/8f53fac1-c512-40c2-90e9-9fa5a92e7d70)
